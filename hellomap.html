@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>First WebMap</title>
+
+	<link rel="stylesheet" href="styles.css">
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.0/leaflet.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<link rel="stylesheet" href="source/jquery-ui.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+	<link rel="stylesheet" href="https://ppete2.github.io/Leaflet.PolylineMeasure/Leaflet.PolylineMeasure.css" />
+	<link rel="stylesheet" href="plugins/mouseposition/L.Control.MousePosition.css">
+	<link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.css"/>
+	<link rel="stylesheet" href="plugins/minimap/Control.MiniMap.min.css">
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.0/leaflet.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.0/leaflet-src.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.js"></script>
+	<script src="source/jquery-ui.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
+	<script src="https://ppete2.github.io/Leaflet.PolylineMeasure/Leaflet.PolylineMeasure.js"></script>
+	<script src="plugins/mouseposition/L.Control.MousePosition.js"></script>
+	<script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.js"></script>
+	<script src="plugins/minimap/Control.MiniMap.min.js"></script>
+	<script src="plugins/ajax/leaflet.ajax.js"></script>
+
+	<link rel="stylesheet" href="https://unpkg.com/leaflet-measure/dist/leaflet-measure.css" />
+	<script src="https://unpkg.com/leaflet-measure/dist/leaflet-measure.js"></script>
+
+
+	<style>
+		.bold {
+			font-weight: bold;
+			font-size: 16px;
+		}
+
+		.errorMsg {
+			padding: 0;
+			text-align: center;
+			background-color: darksalmon;
+		}
+	</style>
+
+
+</head>
+<body>
+
+	<div id="mapdiv" class="col-md-12"></div>
+
+
+	<script>
+
+		var mymap;
+		var baseLayers;
+		var overlays;
+
+
+		
+		mymap = L.map('mapdiv', {
+		    center: [16.4447, 80.7704],
+		    zoom: 12,
+		    attributionControl: false,
+		    zoomControl: false
+		});
+
+		var GoogleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+				                maxZoom: 23,
+				                subdomains:['mt0','mt1','mt2','mt3']
+				                });
+
+		var openStreetMap =  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png?', {maxZoom:23});
+
+		var CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {maxZoom: 23});
+
+		var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 23});
+
+		var Esri_WorldImagery_minimap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 23});
+
+		var OpenTopoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {maxZoom: 23});
+
+		GoogleStreets.addTo(mymap);
+
+
+		var bld_data = {
+			"type": "FeatureCollection",
+			"name": "Buildings",
+			"features": [
+			{ "type": "Feature", "properties": { "B_ID": 1, "Area": "92.11915", "perimeter": "38.48945" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 80.7703047, 16.4445193 ], [ 80.7704009, 16.444509 ], [ 80.7704087, 16.4445903 ], [ 80.7703129, 16.444599 ], [ 80.7703047, 16.4445193 ] ] ] } },
+			{ "type": "Feature", "properties": { "B_ID": 2, "Area": "101.5595", "perimeter": "46.04779" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 80.7699482, 16.4448822 ], [ 80.7699633, 16.4447286 ], [ 80.7700189, 16.4447327 ], [ 80.7700038, 16.4448863 ], [ 80.7699482, 16.4448822 ] ] ] } },
+			{ "type": "Feature", "properties": { "B_ID": 3, "Area": "94.55837", "perimeter": "43.05106" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 80.7699821, 16.4446598 ], [ 80.7699872, 16.4445222 ], [ 80.7700444, 16.4445215 ], [ 80.7700401, 16.4446615 ], [ 80.7699821, 16.4446598 ] ] ] } },
+			{ "type": "Feature", "properties": { "B_ID": 4, "Area": "83.3697", "perimeter": "39.09586" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 80.7697965, 16.4450559 ], [ 80.7697974, 16.4450091 ], [ 80.7698276, 16.4450087 ], [ 80.7698277, 16.4450007 ], [ 80.7699139, 16.4450044 ], [ 80.7699092, 16.4450712 ], [ 80.7698251, 16.4450663 ], [ 80.7698259, 16.4450571 ], [ 80.7697965, 16.4450559 ] ] ] } },
+			{ "type": "Feature", "properties": { "B_ID": 5, "Area": "142.24914", "perimeter": "52.81055" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 80.7705804, 16.4447335 ], [ 80.7706467, 16.4447095 ], [ 80.7706946, 16.444876 ], [ 80.7706266, 16.4448952 ], [ 80.7705804, 16.4447335 ] ] ] } },
+			{ "type": "Feature", "properties": { "B_ID": 6, "Area": "126.29376", "perimeter": "45.13022" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 80.7705817, 16.4450712 ], [ 80.7705599, 16.4449812 ], [ 80.7706727, 16.4449561 ], [ 80.7706933, 16.4450473 ], [ 80.7705817, 16.4450712 ] ] ] } }
+			]
+		};
+
+
+        //TILED ORTHO IMAGE
+        var tilesource_layer = L.tileLayer('orthotile/{z}/{x}/{y}.png', { minZoom: 12, maxZoom: 23, tms: false, attribution: 'Created by QGIS' });
+
+		//BUILDINGS GEOJSON LAYER
+		var buildings = L.geoJson(bld_data, {
+			style: { 
+				color: 'red', 
+				weight: 2,  
+				fillColor: 0,  
+				fillOpacity: 0
+			},
+			onEachFeature: function (feature, layer) {
+				if (feature.properties && feature.properties.B_ID) {
+					// Bind Popup
+					layer.bindPopup('<div class="bold">Building ID: ' + feature.properties.B_ID + '</div><br>Area: ' 
+									+ feature.properties.Area + '<br>Perimeter: ' + feature.properties.perimeter);
+					
+					// Create a label (DivIcon) at the building centroid
+					var center = layer.getBounds().getCenter();
+					var label = L.divIcon({
+						className: 'building-label',
+						html: '<span style="color:red; font-weight:bold;">' + feature.properties.B_ID + '</span>',
+						iconSize: [30, 20] // Adjust size if necessary
+					});
+
+					// Add label dynamically when the layer is added
+					layer.labelMarker = L.marker(center, { icon: label, interactive: false });
+				}
+			}
+		});
+
+							
+
+		//SCALE
+		L.control.scale({position:'bottomleft', maxWidth:'200', imperial:false}).addTo(mymap);
+
+		//ZOOM CONTROL
+		L.control.zoom({position:'topright'}).addTo(mymap);
+
+		//MEASURE
+		//L.control.polylineMeasure({position:'topright'}).addTo(mymap);
+
+		L.control.measure({
+			primaryLengthUnit: "meters",
+			secondaryLengthUnit: "kilometers",
+			primaryAreaUnit: "sqmeters",
+			secondaryAreaUnit: "hectares",
+			activeColor: "#FF0000",
+			completedColor: "#00FF00"
+		}).addTo(mymap);
+
+
+		//MOUSE POSITION
+		L.control.mousePosition({position:'bottomright'}).addTo(mymap);
+
+		//DRAW CONTROL OR GEOMAN
+		mymap.pm.addControls({  
+		  position: 'topleft',  
+		  drawCircleMarker: false,
+		  rotateMode: false,
+		}); 
+
+
+		mymap.on("pm:create", function(e){
+			console.log(e);
+		});
+
+		//MINIMAP
+		var miniMap = new L.Control.MiniMap(Esri_WorldImagery_minimap,{
+			position:'bottomright',
+			height: 150,
+			width: 150
+		}).addTo(mymap);
+
+
+		//LAYER CONTROL
+		baseLayers = {
+		    "Google Streets": GoogleStreets,
+		    "OSM": openStreetMap,
+		    "CartoDB Positron": CartoDB_Positron,
+		    "Esri Imagery": Esri_WorldImagery,
+		    "Open Topo Map": OpenTopoMap
+		};
+
+		overlays = {
+		    "Site_UAV_OrthoImage": tilesource_layer,
+			"Buildings": buildings
+		};
+
+		var control_layers =  L.control.layers(baseLayers, overlays).addTo(mymap);
+
+		// Listen for overlayadd event to add labels dynamically
+		mymap.on('overlayadd', function(eventLayer) {
+			if (eventLayer.name === "Buildings") {
+				buildings.eachLayer(function(layer) {
+					if (layer.labelMarker) {
+						layer.labelMarker.addTo(mymap);
+					}
+				});
+			}
+		});
+
+		// Listen for overlayremove event to remove labels dynamically
+		mymap.on('overlayremove', function(eventLayer) {
+			if (eventLayer.name === "Buildings") {
+				buildings.eachLayer(function(layer) {
+					if (layer.labelMarker) {
+						mymap.removeLayer(layer.labelMarker);
+					}
+				});
+			}
+		});
+
+	</script>
+	
+</body>
+</html>
